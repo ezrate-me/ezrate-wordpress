@@ -1,0 +1,50 @@
+/* EZRate Price Widgets — dashboard */
+.ezrpwa-admin .ezrpwa-box { background: #fff; border: 1px solid #dcdcde; border-radius: 10px; padding: 16px 20px; margin: 0 0 16px; box-shadow: 0 1px 1px rgba(0, 0, 0, .03); }
+.ezrpwa-admin .ezrpwa-box h2 { margin: 0 0 12px; font-size: 15px; }
+.ezrpwa-admin .ezrpwa-lead { max-width: 820px; font-size: 13.5px; }
+.ezrpwa-status { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; background: #f0f6fc; border: 1px solid #c5d9ed; border-radius: 8px; padding: 9px 12px; margin: 12px 0; }
+.ezrpwa-status .dashicons { color: #00a32a; }
+.ezrpwa-status.is-error { background: #fcf0f1; border-color: #f0c5c8; }
+.ezrpwa-status.is-error .dashicons { color: #d63638; }
+.ezrpwa-err { color: #b32d2e; }
+.ezrpwa-list code.ezrpwa-copy, .ezrpwa-how code.ezrpwa-copy { cursor: copy; user-select: all; }
+.ezrpwa-copy.is-copied { background: #d1f0d8; }
+.ezrpwa-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 20px; align-items: start; }
+.ezrpwa-sticky { position: sticky; top: 46px; }
+.ezrpwa-preview { background: repeating-conic-gradient(#f6f7f7 0 25%, #fff 0 50%) 0 0 / 18px 18px; border: 1px dashed #c3c4c7; border-radius: 10px; padding: 14px; transition: opacity .2s; min-height: 80px; }
+.ezrpwa-preview.is-loading { opacity: .5; }
+.ezrpwa-preview .ezrpw { margin: 0; }
+.ezrpwa-how { margin: 8px 0; }
+.ezrpwa-how b { display: block; margin-bottom: 2px; }
+.ezrpwa-how code { display: block; padding: 6px 8px; word-break: break-all; }
+.ezrpwa-l { display: block; font-weight: 600; margin: 0 0 6px; }
+.ezrpwa-grid2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0 18px; }
+.ezrpwa-types { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.ezrpwa-type input { position: absolute; opacity: 0; }
+.ezrpwa-type span { display: flex; flex-direction: column; gap: 2px; border: 1.5px solid #dcdcde; border-radius: 10px; padding: 10px 12px; cursor: pointer; height: 100%; box-sizing: border-box; }
+.ezrpwa-type span .dashicons { color: #2271b1; margin-bottom: 4px; }
+.ezrpwa-type small { color: #646970; line-height: 1.5; }
+.ezrpwa-type input:checked + span { border-color: #2271b1; background: #f0f6fc; box-shadow: 0 0 0 1px #2271b1; }
+.ezrpwa-type input:focus-visible + span { outline: 2px solid #2271b1; }
+.ezrpwa-sel { list-style: none; margin: 8px 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; min-height: 34px; }
+.ezrpwa-sel li { display: inline-flex; align-items: center; gap: 4px; margin: 0; background: #1d2327; color: #fff; border-radius: 99px; padding: 3px 4px 3px 10px; }
+.rtl .ezrpwa-sel li { padding: 3px 10px 3px 4px; }
+.ezrpwa-sel li img { border-radius: 50%; }
+.ezrpwa-sel li button { all: unset; cursor: pointer; width: 20px; height: 20px; text-align: center; line-height: 20px; border-radius: 50%; color: #c3c4c7; font-size: 12px; }
+.ezrpwa-sel li button:hover, .ezrpwa-sel li button:focus-visible { background: rgba(255, 255, 255, .15); color: #fff; }
+.ezrpwa-q { width: 100%; max-width: 360px; margin-bottom: 8px; }
+.ezrpwa-pool { max-height: 300px; overflow-y: auto; border: 1px solid #f0f0f1; border-radius: 8px; padding: 6px 10px; }
+.ezrpwa-cat { margin: 6px 0 10px; }
+.ezrpwa-cat > b { display: block; color: #646970; font-size: 12px; margin-bottom: 4px; }
+.ezrpwa-chip { display: inline-flex; align-items: center; gap: 5px; margin: 0 0 5px; margin-inline-end: 5px; background: #fff; border: 1px solid #dcdcde; border-radius: 99px; padding: 3px 10px; cursor: pointer; font-size: 12.5px; }
+.ezrpwa-chip img { border-radius: 50%; }
+.ezrpwa-chip:hover { border-color: #2271b1; }
+.ezrpwa-chip.is-on { background: #f0f6fc; border-color: #2271b1; color: #135e96; font-weight: 600; }
+.ezrpwa-chip[hidden] { display: none; }
+.ezrpwa-checks { display: grid; gap: 8px; margin-bottom: 12px; }
+.ezrpwa-radios { display: grid; gap: 6px; margin-bottom: 8px; }
+.ezrpwa-colors { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0 14px; }
+.ezrpwa-admin [hidden] { display: none !important; }
+.ezrpwa-guide { width: 100%; height: calc(100vh - 160px); min-height: 600px; border: 1px solid #dcdcde; border-radius: 10px; background: #fff; }
+@media (max-width: 1100px) { .ezrpwa-cols { grid-template-columns: 1fr; } .ezrpwa-sticky { position: static; } }
+.ezrpwa-logo { width: 30px; height: 30px; vertical-align: middle; margin-inline-end: 8px; border-radius: 7px; }
