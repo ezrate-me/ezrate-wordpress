@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ezrate-price-widgets/widget",
+	"version": "2.1.0",
+	"title": "EZRate price widget",
+	"category": "widgets",
+	"icon": "chart-area",
+	"description": "Live dollar, gold, coin and crypto prices (Toman) from one of your EZRate widgets.",
+	"keywords": [
+		"currency",
+		"gold",
+		"dollar",
+		"ezrate",
+		"قیمت"
+	],
+	"textdomain": "ezrate-price-widgets",
+	"attributes": {
+		"widgetId": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		]
+	},
+	"editorScript": "file:./index.js",
+	"style": "ezrpw"
+}

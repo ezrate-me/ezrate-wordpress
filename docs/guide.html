@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EZRate Price Widgets — Guide / راهنما</title>
+<style>
+:root { --ink: #111318; --mute: #5e6470; --line: #e3e1da; --soft: #f5f4f0; --brand: #1f3fd1; --gold: #c47a12; --ok: #0b8a55; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f7f6f2; color: var(--ink); font: 15px/1.95 Vazirmatn, "Segoe UI", Tahoma, system-ui, sans-serif; }
+header { background: linear-gradient(150deg, #2b4be0, #14205e 75%); color: #fff; padding: 26px 20px 22px; }
+.in { max-width: 980px; margin: 0 auto; }
+header h1 { margin: 0 0 4px; font-size: clamp(22px, 3.4vw, 30px); }
+header p { margin: 0; color: #d5dcff; }
+.tabs { display: inline-flex; background: rgba(255, 255, 255, .14); border-radius: 10px; padding: 3px; margin-top: 14px; }
+.tabs button { all: unset; cursor: pointer; padding: 6px 16px; border-radius: 8px; font-weight: 700; color: #d5dcff; }
+.tabs button[aria-pressed="true"] { background: #fff; color: #14205e; }
+main { padding: 20px 16px 50px; }
+nav.toc { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 18px; margin-bottom: 18px; }
+nav.toc ol { margin: 0; padding-inline-start: 20px; columns: 2; column-gap: 30px; }
+nav.toc a { color: var(--brand); text-decoration: none; }
+section { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 16px; }
+h2 { margin: 0 0 10px; font-size: 20px; display: flex; gap: 10px; align-items: center; }
+h2 b { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--brand); color: #fff; font-size: 15px; flex: none; }
+h3 { font-size: 16px; margin: 16px 0 6px; }
+p { margin: 0 0 10px; }
+ul, ol { margin: 0 0 10px; padding-inline-start: 22px; }
+li { margin-bottom: 4px; }
+code { direction: ltr; unicode-bidi: embed; background: #eef1ff; color: #17246b; padding: 1px 6px; border-radius: 5px; font: 13px ui-monospace, Menlo, Consolas, monospace; }
+pre { direction: ltr; text-align: left; background: #12151c; color: #e7e9ee; padding: 12px 14px; border-radius: 10px; overflow-x: auto; font: 13px/1.7 ui-monospace, Menlo, Consolas, monospace; }
+table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: start; vertical-align: top; }
+th { background: var(--soft); }
+figure { margin: 12px 0; }
+figure img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
+figcaption { font-size: 13px; color: var(--mute); margin-top: 4px; }
+.tip { background: #eaf6f0; border-inline-start: 4px solid var(--ok); border-radius: 8px; padding: 9px 12px; margin: 10px 0; }
+.warn { background: #fff5e5; border-inline-start: 4px solid var(--gold); border-radius: 8px; padding: 9px 12px; margin: 10px 0; }
+.types { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+.types div { background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.types b { display: block; }
+[data-lang] { display: none; }
+body.fa [data-lang="fa"], body.en [data-lang="en"] { display: block; }
+@media (max-width: 640px) { nav.toc ol { columns: 1; } section { padding: 14px; } }
+</style>
+</head>
+<body class="fa">
+<header><div class="in">
+	<img src="../assets/img/icon-128.png" alt="EZRate" width="54" height="54" style="border-radius:13px;display:block;margin-bottom:10px">
+	<h1 data-lang="fa">راهنمای افزونهٔ «ویجت قیمت EZRate»</h1>
+	<h1 data-lang="en">EZRate Price Widgets — guide</h1>
+	<p data-lang="fa">نصب، فعال‌سازی، ساخت ویجت، حالت‌ها و تنظیمات — قیمت دلار، طلا، سکه و ارز دیجیتال در سایت وردپرسی شما.</p>
+	<p data-lang="en">Install, activate, create widgets, all types and settings — dollar, gold, coin and crypto prices on your WordPress site.</p>
+	<div class="tabs" role="group"><button type="button" data-set="fa">فارسی</button><button type="button" data-set="en">English</button></div>
+</div></header>
+
+<main class="in">
+<!-- ============================ فارسی ============================ -->
+<div data-lang="fa" dir="rtl">
+	<nav class="toc"><ol>
+		<li><a href="#fa-install">نصب و فعال‌سازی</a></li>
+		<li><a href="#fa-first">ساخت اولین ویجت</a></li>
+		<li><a href="#fa-types">انواع ویجت</a></li>
+		<li><a href="#fa-prices">انتخاب قیمت‌ها و ترتیب</a></li>
+		<li><a href="#fa-display">نمایش و محل قرارگیری</a></li>
+		<li><a href="#fa-style">رنگ و ظاهر</a></li>
+		<li><a href="#fa-place">قرار دادن در سایت</a></li>
+		<li><a href="#fa-short">شورت‌کد سریع</a></li>
+		<li><a href="#fa-settings">تنظیمات و به‌روزرسانی قیمت‌ها</a></li>
+		<li><a href="#fa-faq">سؤالات و رفع اشکال</a></li>
+	</ol></nav>
+
+	<section id="fa-install"><h2><b>۱</b>نصب و فعال‌سازی</h2>
+		<ol>
+			<li>در پیشخوان وردپرس به <b>افزونه‌ها › افزودن</b> بروید و «EZRate» را جستجو کنید؛ یا فایل zip افزونه را از <b>بارگذاری افزونه</b> نصب کنید.</li>
+			<li>روی <b>فعال‌سازی</b> بزنید. منوی <b>EZRate</b> در ستون کناری پیشخوان اضافه می‌شود.</li>
+			<li>یک ویجت «زیرنویس قیمت» آماده ساخته شده و قیمت‌ها در چند ثانیه دریافت می‌شوند. نیازی به ثبت‌نام، کلید API یا کد نیست.</li>
+		</ol>
+		<div class="tip">قیمت‌ها روی سایت شما ذخیره و هر ۳۰ دقیقه در پس‌زمینه به‌روز می‌شوند؛ بازدیدکننده‌ها هیچ‌وقت منتظر سرور EZRate نمی‌مانند.</div>
+	</section>
+
+	<section id="fa-first"><h2><b>۲</b>ساخت اولین ویجت</h2>
+		<p>از <b>EZRate › افزودن ویجت</b> (یا ویرایش ویجت آماده) شروع کنید. صفحه دو بخش دارد: تنظیمات در سمت راست و <b>پیش‌نمایش زنده</b> در سمت چپ که با هر تغییر فوراً عوض می‌شود.</p>
+		<figure><img src="img/edit-fa.jpg" alt="ویرایش ویجت" loading="lazy"><figcaption>ویرایش ویجت: نوع، قیمت‌ها، نمایش و ظاهر با پیش‌نمایش زنده</figcaption></figure>
+		<p>بعد از <b>ساخت ویجت</b>، شورت‌کد آن (مثل <code>[ezrate_widget id="2"]</code>) زیر پیش‌نمایش نمایش داده می‌شود؛ با یک کلیک کپی می‌شود.</p>
+	</section>
+
+	<section id="fa-types"><h2><b>۳</b>انواع ویجت</h2>
+		<div class="types">
+			<div><b>زیرنویس متحرک</b>قیمت‌ها مثل زیرنویس خبری حرکت می‌کنند؛ با بردن ماوس متوقف می‌شود.</div>
+			<div><b>نوار قیمت</b>یک ردیف ثابت قیمت؛ مناسب بالای سایت.</div>
+			<div><b>کارت قیمت</b>کارت‌های مرتب با قیمت، واحد و درصد تغییر؛ ۱ تا ۶ ستون.</div>
+			<div><b>جدول قیمت</b>نام، خرید، فروش و تغییر در یک جدول.</div>
+			<div><b>نمودار</b>نمودار یک دارایی با بازهٔ روز، هفته، ماه و همه، کمترین و بیشترین.</div>
+		</div>
+		<figure><img src="img/front-fa.jpg" alt="ویجت‌ها در سایت فارسی" loading="lazy"><figcaption>زیرنویس ثابت بالای سایت، کارت قیمت و نمودار دلار در یک سایت فارسی</figcaption></figure>
+	</section>
+
+	<section id="fa-prices"><h2><b>۴</b>انتخاب قیمت‌ها و ترتیب</h2>
+		<ul>
+			<li>در بخش <b>قیمت‌ها</b> روی هر ارز، طلا، سکه یا ارز دیجیتال کلیک کنید تا اضافه شود (دوباره کلیک = حذف). حداکثر ۲۰ قیمت.</li>
+			<li>ترتیب را با فلش‌های <b>↑ ↓</b> کنار هر مورد عوض کنید؛ <b>×</b> حذف می‌کند.</li>
+			<li>کادر جستجو با نام فارسی، انگلیسی یا کد (USD، G18…) کار می‌کند.</li>
+			<li>برای نمودار، <b>دارایی</b> و <b>بازهٔ پیش‌فرض</b> را انتخاب کنید؛ بازدیدکننده می‌تواند بازه را عوض کند.</li>
+		</ul>
+		<div class="tip">قیمت ارزهای دیجیتال (به‌جز تتر) و انس جهانی به دلار و بقیه به تومان نمایش داده می‌شوند.</div>
+	</section>
+
+	<section id="fa-display"><h2><b>۵</b>نمایش و محل قرارگیری</h2>
+		<ul>
+			<li><b>زبان ویجت:</b> فارسی (راست‌به‌چپ با اعداد فارسی) یا انگلیسی؛ مستقل از زبان سایت.</li>
+			<li><b>پوسته:</b> روشن یا تیره.</li>
+			<li>نمایش درصد تغییر ۲۴ ساعته، قیمت خرید، پرچم و آیکون، ساعت به‌روزرسانی و واحد پول.</li>
+			<li><b>سرعت زیرنویس</b> (ثانیه برای هر دور) و <b>تعداد ستون</b> کارت‌ها.</li>
+			<li>برای زیرنویس و نوار قیمت، <b>محل نمایش</b>: جایی که شورت‌کد/بلوک را می‌گذارید، یا <b>ثابت بالا / پایین همهٔ صفحه‌ها</b>؛ با گزینهٔ «فقط صفحهٔ اصلی» و «در گوشی نمایش داده نشود».</li>
+		</ul>
+	</section>
+
+	<section id="fa-style"><h2><b>۶</b>رنگ و ظاهر</h2>
+		<p>در بخش <b>ظاهر</b> رنگ پس‌زمینه، متن، متن کم‌رنگ، حاشیه، رنگ اصلی (دکمه‌ها)، افزایش و کاهش قیمت و <b>خط نمودار</b> را تعیین کنید. رنگی که خالی بماند از پوستهٔ روشن/تیره گرفته می‌شود. خط نمودار خالی = سبز یا قرمز بر اساس روند.</p>
+		<p>گردی گوشه‌ها (۰ تا ۲۸ پیکسل)، اندازهٔ متن (کوچک، متوسط، بزرگ) و فونت (همان فونت قالب یا فونت سیستم) هم قابل تنظیم است.</p>
+	</section>
+
+	<section id="fa-place"><h2><b>۷</b>قرار دادن در سایت</h2>
+		<h3>ساده‌ترین راه: یک کلیک، بدون کد</h3>
+		<p>بلافاصله بعد از فعال کردن افزونه، در پیشخوان پیامی با این دکمه‌ها می‌بینید (همین دکمه‌ها در صفحهٔ هر ابزارک، زیر «پیش‌نمایش زنده» هم هست):</p>
+		<ul>
+			<li><b>نمایش بالای همهٔ صفحه‌های سایتم</b>: زیرنویس قیمت بالای همهٔ صفحه‌ها ثابت می‌شود.</li>
+			<li><b>نمایش بالای همهٔ نوشته‌هایم</b>: برای کارت، جدول و نمودار؛ بالای متن هر نوشته می‌آید.</li>
+			<li><b>افزودن به ستون کناری</b>: در قالب‌های کلاسیک، ابزارک اول ستون کناری قرار می‌گیرد.</li>
+			<li><b>ساخت برگهٔ قیمت با این ابزارک</b>: یک برگهٔ «قیمت لحظه‌ای ارز، طلا و سکه» منتشر می‌شود؛ بعد آن را به فهرست (منو) اضافه کنید.</li>
+		</ul>
+		<p>یا در صفحهٔ ابزارک، بخش <b>«کجا نمایش داده شود؟»</b> یکی از گزینه‌ها (بالا یا پایین سایت، بالا یا پایین متن نوشته‌ها/برگه‌ها) را انتخاب و ذخیره کنید. فایل‌های قالب شما هیچ‌وقت تغییر نمی‌کند و هر کار برگشت‌پذیر است.</p>
+		<h3>شورت‌کد</h3>
+		<p>شورت‌کد را در نوشته، برگه، ابزارک «متن» یا صفحه‌سازها (المنتور، WPBakery…) بگذارید:</p>
+		<pre>[ezrate_widget id="2"]</pre>
+		<h3>بلوک گوتنبرگ</h3>
+		<p>در ویرایشگر بلوک، بلوک <b>«ویجت قیمت EZRate»</b> را اضافه و از ستون تنظیمات ویجت موردنظر را انتخاب کنید؛ پیش‌نمایش همان‌جا دیده می‌شود.</p>
+		<h3>ابزارک کلاسیک</h3>
+		<p>در قالب‌های کلاسیک: <b>نمایش › ابزارک‌ها</b> › «ویجت قیمت EZRate» را به ستون کناری اضافه و ویجت را انتخاب کنید.</p>
+		<h3>فایل قالب</h3>
+		<pre>&lt;?php echo do_shortcode( '[ezrate_widget id="2"]' ); ?&gt;</pre>
+		<h3>ثابت بالا یا پایین سایت</h3>
+		<p>برای زیرنویس و نوار قیمت، «ثابت بالای همهٔ صفحه‌ها» یا «ثابت پایین» را انتخاب کنید؛ نیازی به شورت‌کد نیست. فاصلهٔ لازم به بدنهٔ سایت اضافه می‌شود تا محتوا زیر نوار نرود.</p>
+		<figure><img src="img/list-fa.jpg" alt="فهرست ویجت‌ها" loading="lazy"><figcaption>فهرست ویجت‌ها با شورت‌کد هر کدام (کلیک = کپی)</figcaption></figure>
+	</section>
+
+	<section id="fa-short"><h2><b>۸</b>شورت‌کد سریع (بدون ساخت ویجت)</h2>
+		<p>می‌توانید تنظیمات را مستقیم در شورت‌کد بنویسید؛ یا تنظیمات یک ویجت ذخیره‌شده را با id تغییر دهید:</p>
+		<pre>[ezrate_widget type="cards" assets="usd,eur,g18,emami" lang="fa" theme="dark"]
+[ezrate_widget id="2" theme="dark" columns="2"]
+[ezrate_widget type="chart" chart_asset="g18" range="1m"]</pre>
+		<table>
+			<tr><th>ویژگی</th><th>مقدار</th></tr>
+			<tr><td><code>type</code></td><td><code>ticker</code>، <code>bar</code>، <code>cards</code>، <code>table</code>، <code>chart</code></td></tr>
+			<tr><td><code>assets</code></td><td>کد قیمت‌ها با کاما: <code>usd,eur,aed,try,gbp,g18,g24,emami,nim,ounce,usdt,btc</code> …</td></tr>
+			<tr><td><code>chart_asset</code> / <code>range</code></td><td>دارایی نمودار و بازه: <code>1d</code>، <code>7d</code>، <code>1m</code>، <code>all</code></td></tr>
+			<tr><td><code>lang</code> / <code>theme</code></td><td><code>fa</code> یا <code>en</code> / <code>light</code> یا <code>dark</code></td></tr>
+			<tr><td><code>columns</code> / <code>speed</code></td><td>ستون کارت‌ها (۰ = خودکار) / ثانیهٔ هر دور زیرنویس</td></tr>
+		</table>
+	</section>
+
+	<section id="fa-settings"><h2><b>۹</b>تنظیمات و به‌روزرسانی قیمت‌ها</h2>
+		<figure><img src="img/settings-fa.jpg" alt="تنظیمات" loading="lazy"><figcaption>EZRate › تنظیمات</figcaption></figure>
+		<ul>
+			<li><b>وضعیت قیمت‌ها:</b> زمان آخرین دریافت و به‌روزرسانی بعدی. قیمت‌ها هر ۳۰ دقیقه (پلن رایگان داده) به‌روز می‌شوند.</li>
+			<li><b>به‌روزرسانی همین حالا:</b> دریافت دستی (حداکثر هر ۵ دقیقه یک بار).</li>
+			<li><b>زبان ویجت‌های جدید.</b></li>
+			<li><b>لینک‌ها:</b> لینک هر قیمت به صفحهٔ آن در ezrate.me و لینک کوچک «قیمت‌ها از EZRate». هر دو به‌طور پیش‌فرض خاموش‌اند؛ اگر روشن کنید از ما حمایت کرده‌اید. 🙏</li>
+			<li><b>حذف افزونه:</b> اگر تیک خورده باشد، با حذف افزونه ویجت‌ها و تنظیمات هم پاک می‌شوند.</li>
+		</ul>
+		<div class="warn">برای به‌روزرسانی دقیقه‌به‌دقیقه از ویجت‌های پنل کاربری EZRate (ezrate.me › ویجت‌ساز) استفاده کنید؛ این افزونه برای سرعت و سبکی، داده را هر ۳۰ دقیقه روی سایت شما ذخیره می‌کند.</div>
+	</section>
+
+	<section id="fa-faq"><h2><b>۱۰</b>سؤالات و رفع اشکال</h2>
+		<h3>قیمت‌ها نمایش داده نمی‌شوند</h3>
+		<p>EZRate › تنظیمات را باز کنید: اگر خطا نوشته شده، سرور سایت باید به <code>https://api.ezrate.me</code> دسترسی HTTPS داشته باشد (فایروال هاست را بررسی کنید). سپس «به‌روزرسانی همین حالا» را بزنید. تا وقتی ارتباط برقرار نشود، آخرین قیمت‌های ذخیره‌شده نمایش داده می‌شوند.</p>
+		<h3>با افزونه‌های کش سازگار است؟</h3>
+		<p>بله. صفحهٔ کش‌شده قیمت لحظهٔ ساخت کش را نشان می‌دهد؛ مدت کش صفحه‌ها را ۳۰ دقیقه یا کمتر بگذارید.</p>
+		<h3>کرون وردپرس غیرفعال است</h3>
+		<p>اگر <code>DISABLE_WP_CRON</code> فعال است، کرون سرور باید <code>wp-cron.php</code> را اجرا کند؛ در غیر این صورت قیمت‌ها با اولین بازدید بعد از انقضا به‌روز می‌شوند.</p>
+		<h3>حریم خصوصی</h3>
+		<p>هیچ اطلاعاتی از بازدیدکننده‌ها ارسال نمی‌شود. فقط سرور سایت شما هر ۳۰ دقیقه قیمت‌ها را دریافت می‌کند؛ آیکون پرچم‌ها از ezrate.me بارگذاری می‌شود (قابل خاموش کردن در هر ویجت).</p>
+	</section>
+</div>
+
+<!-- ============================ English ============================ -->
+<div data-lang="en" dir="ltr">
+	<nav class="toc"><ol>
+		<li><a href="#en-install">Install and activate</a></li>
+		<li><a href="#en-first">Your first widget</a></li>
+		<li><a href="#en-types">Widget types</a></li>
+		<li><a href="#en-prices">Choosing prices and order</a></li>
+		<li><a href="#en-display">Display and position</a></li>
+		<li><a href="#en-style">Colours and style</a></li>
+		<li><a href="#en-place">Placing a widget</a></li>
+		<li><a href="#en-short">Quick shortcode</a></li>
+		<li><a href="#en-settings">Settings and price updates</a></li>
+		<li><a href="#en-faq">FAQ and troubleshooting</a></li>
+	</ol></nav>
+
+	<section id="en-install"><h2><b>1</b>Install and activate</h2>
+		<ol>
+			<li>In your dashboard go to <b>Plugins › Add New</b> and search for "EZRate", or upload the plugin zip with <b>Upload Plugin</b>.</li>
+			<li>Click <b>Activate</b>. An <b>EZRate</b> menu appears in the dashboard sidebar.</li>
+			<li>A "Price ticker" widget is created for you and the prices are downloaded within seconds. No account, API key or code needed.</li>
+		</ol>
+		<div class="tip">Prices are stored on your site and refreshed in the background every 30 minutes; your visitors never wait for the EZRate server.</div>
+	</section>
+
+	<section id="en-first"><h2><b>2</b>Your first widget</h2>
+		<p>Start from <b>EZRate › Add widget</b> (or edit the ready-made one). The settings are on the left and the <b>live preview</b> on the right; it updates with every change.</p>
+		<figure><img src="img/edit-en.jpg" alt="Edit widget" loading="lazy"><figcaption>Editing a widget: type, prices, display and style, with a live preview</figcaption></figure>
+		<p>After <b>Create widget</b>, its shortcode (e.g. <code>[ezrate_widget id="2"]</code>) is shown under the preview; click to copy it.</p>
+	</section>
+
+	<section id="en-types"><h2><b>3</b>Widget types</h2>
+		<div class="types">
+			<div><b>Moving ticker</b>Prices scroll like a news ticker; pauses on hover.</div>
+			<div><b>Price bar</b>One static row of prices, great for the top of a site.</div>
+			<div><b>Price cards</b>Tidy cards with price, unit and change; 1–6 columns.</div>
+			<div><b>Price table</b>Name, buy, sell and change.</div>
+			<div><b>Chart</b>One asset with day / week / month / all ranges, low and high.</div>
+		</div>
+		<figure><img src="img/front-en.jpg" alt="Widgets on an English site" loading="lazy"><figcaption>A price table, a dark chart with a custom line colour and a dark price bar</figcaption></figure>
+	</section>
+
+	<section id="en-prices"><h2><b>4</b>Choosing prices and order</h2>
+		<ul>
+			<li>In <b>Prices</b>, click any currency, gold, coin or crypto to add it (click again to remove). Up to 20.</li>
+			<li>Change the order with the <b>↑ ↓</b> arrows; <b>×</b> removes it.</li>
+			<li>Search works with English or Persian names and codes (USD, G18…).</li>
+			<li>For a chart, pick the <b>asset</b> and the <b>default range</b>; visitors can switch ranges.</li>
+		</ul>
+		<div class="tip">Crypto (except USDT) and the global gold ounce are shown in US dollars, everything else in Toman.</div>
+	</section>
+
+	<section id="en-display"><h2><b>5</b>Display and position</h2>
+		<ul>
+			<li><b>Widget language:</b> Persian (right-to-left, Persian digits) or English — independent of the site language.</li>
+			<li><b>Theme:</b> light or dark.</li>
+			<li>Show or hide the 24-hour change, the buy price, flags and icons, the update time and currency.</li>
+			<li><b>Ticker speed</b> (seconds per loop) and the number of card <b>columns</b>.</li>
+			<li>For tickers and price bars, <b>Where</b>: where you place the shortcode / block, or <b>fixed at the top / bottom of every page</b> — optionally on the home page only and hidden on phones.</li>
+		</ul>
+	</section>
+
+	<section id="en-style"><h2><b>6</b>Colours and style</h2>
+		<p>In <b>Style</b>, set the background, text, secondary text, border, accent (buttons), price up / down and <b>chart line</b> colours. Empty colours come from the light / dark theme; an empty chart line is green or red by trend.</p>
+		<figure><img src="img/style-en.jpg" alt="Style" loading="lazy"><figcaption>Style options of a chart widget with a gold line</figcaption></figure>
+		<p>Also: corner radius (0–28 px), text size (small, medium, large) and font (your theme's or the system font).</p>
+	</section>
+
+	<section id="en-place"><h2><b>7</b>Placing a widget</h2>
+		<h3>Easiest: one click, no code</h3>
+		<p>Right after activation a notice on your dashboard offers these buttons (they are also under the live preview of every widget):</p>
+		<ul>
+			<li><b>Show at the top of my whole site</b> — the ticker is fixed at the top of every page.</li>
+			<li><b>Show above all my posts</b> — for cards, tables and charts: shown above the text of each post.</li>
+			<li><b>Add to my sidebar</b> — classic themes: the widget goes to the top of the sidebar.</li>
+			<li><b>Create a prices page with it</b> — publishes a "Live currency and gold prices" page; then add it to your menu.</li>
+		</ul>
+		<p>Or choose <b>Where should it appear?</b> in the widget (top or bottom of the site, above or below the text of posts / pages) and save. Your theme files are never changed and everything can be undone.</p>
+		<h3>Shortcode</h3>
+		<p>Paste the shortcode into a post, page, a "Text" widget or a page builder (Elementor, WPBakery…):</p>
+		<pre>[ezrate_widget id="2"]</pre>
+		<h3>Block editor</h3>
+		<p>Add the <b>"EZRate price widget"</b> block and choose the widget in the block settings; the preview shows right in the editor.</p>
+		<figure><img src="img/block-en.jpg" alt="Block" loading="lazy"><figcaption>The block with its settings</figcaption></figure>
+		<h3>Classic widget</h3>
+		<p>In classic themes: <b>Appearance › Widgets</b> › add "EZRate price widget" to a sidebar and pick the widget.</p>
+		<h3>Theme file</h3>
+		<pre>&lt;?php echo do_shortcode( '[ezrate_widget id="2"]' ); ?&gt;</pre>
+		<h3>Fixed at the top or bottom</h3>
+		<p>For tickers and bars, choose "Fixed at the top of every page" or "…bottom"; no shortcode needed. The page gets the padding it needs so nothing is hidden under the bar.</p>
+		<figure><img src="img/list-en.jpg" alt="Widget list" loading="lazy"><figcaption>The widget list; click a shortcode to copy it</figcaption></figure>
+	</section>
+
+	<section id="en-short"><h2><b>8</b>Quick shortcode (no saved widget)</h2>
+		<p>Write the options in the shortcode, or override a saved widget by id:</p>
+		<pre>[ezrate_widget type="cards" assets="usd,eur,g18,emami" lang="en" theme="dark"]
+[ezrate_widget id="2" theme="dark" columns="2"]
+[ezrate_widget type="chart" chart_asset="g18" range="1m"]</pre>
+		<table>
+			<tr><th>Attribute</th><th>Values</th></tr>
+			<tr><td><code>type</code></td><td><code>ticker</code>, <code>bar</code>, <code>cards</code>, <code>table</code>, <code>chart</code></td></tr>
+			<tr><td><code>assets</code></td><td>comma-separated codes: <code>usd,eur,aed,try,gbp,g18,g24,emami,nim,ounce,usdt,btc</code> …</td></tr>
+			<tr><td><code>chart_asset</code> / <code>range</code></td><td>chart asset and range: <code>1d</code>, <code>7d</code>, <code>1m</code>, <code>all</code></td></tr>
+			<tr><td><code>lang</code> / <code>theme</code></td><td><code>fa</code> or <code>en</code> / <code>light</code> or <code>dark</code></td></tr>
+			<tr><td><code>columns</code> / <code>speed</code></td><td>card columns (0 = automatic) / seconds per ticker loop</td></tr>
+		</table>
+	</section>
+
+	<section id="en-settings"><h2><b>9</b>Settings and price updates</h2>
+		<figure><img src="img/settings-en.jpg" alt="Settings" loading="lazy"><figcaption>EZRate › Settings</figcaption></figure>
+		<ul>
+			<li><b>Price status:</b> time of the last download and of the next one. Prices refresh every 30 minutes (free data plan).</li>
+			<li><b>Refresh prices now:</b> manual download (at most every 5 minutes).</li>
+			<li><b>Language of new widgets.</b></li>
+			<li><b>Links:</b> link each price to its ezrate.me page, and a small "Rates by EZRate" credit. Both are off by default; turning them on supports the plugin. 🙏</li>
+			<li><b>Uninstall:</b> when ticked, deleting the plugin also deletes the widgets and settings.</li>
+		</ul>
+		<div class="warn">For minute-by-minute prices use the widgets of your EZRate account (ezrate.me › Widgets). This plugin stores the data on your site every 30 minutes to stay fast and light.</div>
+	</section>
+
+	<section id="en-faq"><h2><b>10</b>FAQ and troubleshooting</h2>
+		<h3>No prices are shown</h3>
+		<p>Open EZRate › Settings. If an error is shown, your server needs HTTPS access to <code>https://api.ezrate.me</code> (check the host's firewall). Then click "Refresh prices now". Until the connection works, the last saved prices are shown.</p>
+		<h3>Page caching plugins</h3>
+		<p>They work. A cached page shows the prices of the moment it was cached; keep the page cache lifetime at 30 minutes or less.</p>
+		<h3>WP-Cron is disabled</h3>
+		<p>With <code>DISABLE_WP_CRON</code>, a server cron job must call <code>wp-cron.php</code>; otherwise prices refresh on the first visit after they expire.</p>
+		<h3>Privacy</h3>
+		<p>Nothing about your visitors is sent. Only your server downloads the prices every 30 minutes; the flag icons load from ezrate.me (can be turned off per widget).</p>
+	</section>
+</div>
+</main>
+<script>
+( function () {
+	var q = /[?&]lang=(fa|en)/.exec( location.search );
+	var set = function ( l ) {
+		document.body.className = l;
+		document.documentElement.lang = l;
+		document.documentElement.dir = l === 'fa' ? 'rtl' : 'ltr';
+		document.querySelectorAll( '.tabs button' ).forEach( function ( b ) { b.setAttribute( 'aria-pressed', b.getAttribute( 'data-set' ) === l ? 'true' : 'false' ); } );
+	};
+	document.querySelectorAll( '.tabs button' ).forEach( function ( b ) { b.addEventListener( 'click', function () { set( b.getAttribute( 'data-set' ) ); } ); } );
+	set( q ? q[1] : ( ( navigator.language || '' ).indexOf( 'fa' ) === 0 ? 'fa' : 'fa' ) );
+} )();
+</script>
+</body>
+</html>
