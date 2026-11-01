@@ -48,3 +48,5 @@
 .ezrpwa-guide { width: 100%; height: calc(100vh - 160px); min-height: 600px; border: 1px solid #dcdcde; border-radius: 10px; background: #fff; }
 @media (max-width: 1100px) { .ezrpwa-cols { grid-template-columns: 1fr; } .ezrpwa-sticky { position: static; } }
 .ezrpwa-logo { width: 30px; height: 30px; vertical-align: middle; margin-inline-end: 8px; border-radius: 7px; }
+.ezrpwa-adv { margin-top: 10px; }
+.ezrpwa-adv summary { cursor: pointer; color: #2271b1; }

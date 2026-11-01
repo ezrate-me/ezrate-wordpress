@@ -1,6 +1,7 @@
 <?php
 /**
- * Number, price and date formatting in Persian or English (independent of the site language: each widget has its own).
+ * Number, price and date formatting in the widget's language — Persian, English, Arabic, Russian or Turkish (independent of
+ * the site language: each widget has its own) — and the labels of the front-end widgets.
  *
  * @package EZRate_Price_Widgets
  */
@@ -15,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class EZRPW_Format {
 
 	/**
-	 * Labels of the front-end widgets in both languages.
+	 * Labels of the front-end widgets in the five languages.
 	 *
 	 * @var array
 	 */
@@ -35,7 +36,8 @@ final class EZRPW_Format {
 			'all'     => 'همه',
 			'low'     => 'کمترین',
 			'high'    => 'بیشترین',
-			'credit'  => 'قیمت‌ها از',
+			'credit'  => 'منبع:',
+			'brand'   => 'ایزی‌ریت',
 			'nodata'  => 'قیمت‌ها به‌زودی نمایش داده می‌شود.',
 		),
 		'en' => array(
@@ -53,10 +55,89 @@ final class EZRPW_Format {
 			'all'     => 'All',
 			'low'     => 'Low',
 			'high'    => 'High',
-			'credit'  => 'Rates by',
+			'credit'  => 'Source:',
+			'brand'   => 'EZRate',
 			'nodata'  => 'Rates will appear shortly.',
 		),
+		'ar' => array(
+			'buy'     => 'شراء',
+			'sell'    => 'بيع',
+			'change'  => 'التغيّر',
+			'name'    => 'الاسم',
+			'price'   => 'السعر',
+			'toman'   => 'تومان',
+			'updated' => 'آخر تحديث',
+			'unit'    => 'العملة',
+			'1d'      => 'يوم',
+			'7d'      => 'أسبوع',
+			'1m'      => 'شهر',
+			'all'     => 'الكل',
+			'low'     => 'الأدنى',
+			'high'    => 'الأعلى',
+			'credit'  => 'المصدر:',
+			'brand'   => 'EZRate',
+			'nodata'  => 'ستظهر الأسعار قريباً.',
+		),
+		'ru' => array(
+			'buy'     => 'Покупка',
+			'sell'    => 'Продажа',
+			'change'  => 'Изменение',
+			'name'    => 'Название',
+			'price'   => 'Цена',
+			'toman'   => 'туман',
+			'updated' => 'Обновлено',
+			'unit'    => 'Валюта',
+			'1d'      => 'День',
+			'7d'      => 'Неделя',
+			'1m'      => 'Месяц',
+			'all'     => 'Всё',
+			'low'     => 'Мин.',
+			'high'    => 'Макс.',
+			'credit'  => 'Источник:',
+			'brand'   => 'EZRate',
+			'nodata'  => 'Курсы скоро появятся.',
+		),
+		'tr' => array(
+			'buy'     => 'Alış',
+			'sell'    => 'Satış',
+			'change'  => 'Değişim',
+			'name'    => 'Ad',
+			'price'   => 'Fiyat',
+			'toman'   => 'tümen',
+			'updated' => 'Güncellendi',
+			'unit'    => 'Para birimi',
+			'1d'      => 'Gün',
+			'7d'      => 'Hafta',
+			'1m'      => 'Ay',
+			'all'     => 'Tümü',
+			'low'     => 'En düşük',
+			'high'    => 'En yüksek',
+			'credit'  => 'Kaynak:',
+			'brand'   => 'EZRate',
+			'nodata'  => 'Kurlar birazdan görünecek.',
+		),
 	);
+
+	/**
+	 * Persian and Arabic widgets are right-to-left.
+	 *
+	 * @param string $lang Language.
+	 * @return bool
+	 */
+	public static function rtl( $lang ) {
+		return 'fa' === $lang || 'ar' === $lang;
+	}
+
+	/**
+	 * Name of the price unit: Toman, or the code of the display currency (USD, EUR, TRY, AED, RUB).
+	 *
+	 * @param string $lang Language.
+	 * @param string $cur  irt or a currency code.
+	 * @return string
+	 */
+	public static function unit( $lang, $cur ) {
+		return 'irt' === $cur ? self::t( $lang, 'toman' ) : strtoupper( $cur );
+	}
 
 	/**
 	 * Label.
@@ -66,7 +147,10 @@ final class EZRPW_Format {
 	 * @return string
 	 */
 	public static function t( $lang, $key ) {
-		return isset( self::T[ $lang ][ $key ] ) ? self::T[ $lang ][ $key ] : $key;
+		if ( isset( self::T[ $lang ][ $key ] ) ) {
+			return self::T[ $lang ][ $key ];
+		}
+		return isset( self::T['en'][ $key ] ) ? self::T['en'][ $key ] : $key;
 	}
 
 	/**
@@ -107,8 +191,18 @@ final class EZRPW_Format {
 		if ( null === $n ) {
 			return '—';
 		}
-		$s = number_format( (float) $n, $decimals, '.', ',' );
-		return 'fa' === $lang ? self::fa_digits( $s ) : $s;
+		switch ( $lang ) {
+			case 'fa':
+				return self::fa_digits( number_format( (float) $n, $decimals, '.', ',' ) );
+			case 'ar':
+				return strtr( number_format( (float) $n, $decimals, '.', ',' ), array_combine( array( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '.' ), array( '٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '٬', '٫' ) ) );
+			case 'ru':
+				return number_format( (float) $n, $decimals, ',', "\u{00A0}" );
+			case 'tr':
+				return number_format( (float) $n, $decimals, ',', '.' );
+			default:
+				return number_format( (float) $n, $decimals, '.', ',' );
+		}
 	}
 
 	/**
@@ -134,7 +228,8 @@ final class EZRPW_Format {
 			$v = (float) $r['usd'];
 			return '$' . number_format( $v, $v < 10 ? 4 : 2, '.', ',' );
 		}
-		return self::num( 'buy' === $side ? $r['buy'] : $r['sell'], $lang );
+		// prices converted to a display currency carry their decimals (49.13 lira, 1.0842 dollars)
+		return self::num( 'buy' === $side ? $r['buy'] : $r['sell'], $lang, isset( $r['_dec'] ) ? (int) $r['_dec'] : 0 );
 	}
 
 	/**
@@ -149,7 +244,7 @@ final class EZRPW_Format {
 			return '';
 		}
 		$sign = $v > 0 ? '+' : ( $v < 0 ? '−' : '' );
-		return $sign . self::num( abs( $v ), $lang, 2 ) . ( 'fa' === $lang ? '٪' : '%' );
+		return $sign . self::num( abs( $v ), $lang, 2 ) . ( self::rtl( $lang ) ? '٪' : '%' );
 	}
 
 	/**
@@ -166,7 +261,13 @@ final class EZRPW_Format {
 			return '';
 		}
 		if ( class_exists( 'IntlDateFormatter' ) ) {
-			$locale = 'fa' === $lang ? 'fa_IR@calendar=persian' : 'en_GB';
+			$locales = array(
+				'fa' => 'fa_IR@calendar=persian',
+				'ar' => 'ar',
+				'ru' => 'ru_RU',
+				'tr' => 'tr_TR',
+			);
+			$locale  = isset( $locales[ $lang ] ) ? $locales[ $lang ] : 'en_GB';
 			$cal    = 'fa' === $lang ? IntlDateFormatter::TRADITIONAL : IntlDateFormatter::GREGORIAN;
 			$f      = new IntlDateFormatter( $locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, 'Asia/Tehran', $cal, $pattern );
 			$out    = $f->format( $ts );

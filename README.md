@@ -2,7 +2,9 @@
 
 # افزونهٔ وردپرس قیمت ارز، طلا و سکه — EZRate Price Widgets
 
-[English](README.en.md) · [دانلود آخرین نسخه](../../releases/latest)
+[English](README.en.md) · **[نصب از مخزن رسمی وردپرس](https://wordpress.org/plugins/ezrate-price-widgets/)** · [دانلود آخرین نسخه](../../releases/latest)
+
+> در پیشخوان وردپرس: افزونه‌ها › افزودن › جستجوی «EZRate» › نصب و فعال‌سازی.
 
 ![EZRate Price Widgets](images/banner-1544x500-rtl.png)
 

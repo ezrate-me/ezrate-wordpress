@@ -1,17 +1,16 @@
 <?php
 /**
- * Plugin Name:       EZRate Price Widgets – Dollar, Gold & Coin Rates
- * Plugin URI:        https://ezrate.me/services/widgets
+ * Plugin Name:       EZRate Price Widgets – Live Dollar, Gold, Coin & Crypto Prices
+ * Plugin URI:        https://ezrate.me/services/widgets/en
  * Description:       Live Iranian free-market rates (US dollar, euro, gold, coins, USDT and crypto) in Toman: ticker, price bar, cards, table and chart widgets. Shortcode, block and classic widget; every setting in your dashboard.
- * Version:           2.0.0
- * Requires at least: 6.0
+ * Version:           2.3.1
+ * Requires at least: 6.3
  * Requires PHP:      7.4
  * Author:            EZRate
  * Author URI:        https://ezrate.me
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       ezrate-price-widgets
- * Domain Path:       /languages
  *
  * @package EZRate_Price_Widgets
  */
@@ -20,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EZRPW_VERSION', '2.0.0' );
+define( 'EZRPW_VERSION', '2.3.1' );
 define( 'EZRPW_FILE', __FILE__ );
 define( 'EZRPW_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EZRPW_URL', plugin_dir_url( __FILE__ ) );

@@ -13,7 +13,7 @@ $ezrpw_settings = get_option( 'ezrpw_settings', array() );
 if ( is_array( $ezrpw_settings ) && isset( $ezrpw_settings['cleanup'] ) && ! $ezrpw_settings['cleanup'] ) {
 	return;
 }
-foreach ( array( 'ezrpw_widgets', 'ezrpw_settings', 'ezrpw_last_data', 'ezrpw_status' ) as $ezrpw_option ) {
+foreach ( array( 'ezrpw_widgets', 'ezrpw_settings', 'ezrpw_last_data', 'ezrpw_status', 'ezrpw_welcome', 'ezrpw_welcome_shown', 'ezrpw_credit_asked', 'widget_ezrpw_widget' ) as $ezrpw_option ) {
 	delete_option( $ezrpw_option );
 }
 foreach ( array( 'ezrpw_data', 'ezrpw_fetch_lock', 'ezrpw_fetch_backoff', 'ezrpw_manual_refresh' ) as $ezrpw_transient ) {

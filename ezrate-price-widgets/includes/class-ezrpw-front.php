@@ -24,6 +24,40 @@ final class EZRPW_Front {
 		add_action( 'init', array( __CLASS__, 'register_block' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'fixed_bars' ) );
 		add_filter( 'body_class', array( __CLASS__, 'body_class' ) );
+		add_filter( 'the_content', array( __CLASS__, 'auto_content' ), 20 );
+	}
+
+	/**
+	 * Widgets placed «above / below the text of posts and pages»: added to the main content of a single post or page
+	 * only (not to excerpts, lists, feeds or other queries), so the theme layout is never touched.
+	 *
+	 * @param string $content Post content.
+	 * @return string
+	 */
+	public static function auto_content( $content ) {
+		static $done = array();
+		if ( is_admin() || is_feed() || ! is_singular() || ! in_the_loop() || ! is_main_query() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return $content;
+		}
+		$post = get_the_ID();
+		if ( isset( $done[ $post ] ) ) {
+			return $content;
+		}
+		$done[ $post ] = true;
+		$before        = '';
+		$after         = '';
+		foreach ( EZRPW_Widgets::all() as $w ) {
+			if ( ! in_array( $w['position'], array( 'before', 'after' ), true ) || ! EZRPW_Widgets::shows_here( $w ) ) {
+				continue;
+			}
+			$html = '<div class="ezrpw-auto ezrpw-auto-' . esc_attr( $w['position'] ) . '">' . self::render( $w ) . '</div>';
+			if ( 'before' === $w['position'] ) {
+				$before .= $html;
+			} else {
+				$after .= $html;
+			}
+		}
+		return $before . $content . $after;
 	}
 
 	/**
@@ -52,7 +86,7 @@ final class EZRPW_Front {
 
 	/**
 	 * [ezrate_widget id="2"] — or a quick widget without saving one:
-	 * [ezrate_widget type="cards" assets="usd,eur,g18" lang="fa" theme="dark"]
+	 * [ezrate_widget type="cards" assets="usd,eur,g18" lang="fa" cur="irt" theme="dark"]
 	 *
 	 * @param array $atts Attributes.
 	 * @return string
@@ -67,7 +101,7 @@ final class EZRPW_Front {
 			$all  = EZRPW_Widgets::all();
 			$base = empty( $atts['id'] ) && empty( $atts['type'] ) && $all ? reset( $all ) : EZRPW_Widgets::defaults();
 		}
-		$over = array_intersect_key( $atts, array_flip( array( 'type', 'assets', 'chart_asset', 'range', 'lang', 'theme', 'speed', 'columns' ) ) );
+		$over = array_intersect_key( $atts, array_flip( array( 'type', 'assets', 'chart_asset', 'range', 'lang', 'cur', 'theme', 'speed', 'columns' ) ) );
 		$w    = EZRPW_Widgets::sanitize( array_merge( $base, $over ), (int) $base['id'] );
 		if ( 'inline' !== $w['position'] ) {
 			// a fixed bar is printed once in the footer (see fixed_bars); inside content it stays inline.
@@ -80,6 +114,9 @@ final class EZRPW_Front {
 	 * Block (server-side rendered; the editor shows the same HTML).
 	 */
 	public static function register_block() {
+		// the block's style (block.json › style: "ezrpw") must exist before the block: on the site and inside the
+		// iframed editor (Block API 3) WordPress loads it only where the block is shown
+		self::register_assets();
 		register_block_type(
 			EZRPW_DIR . 'blocks/widget',
 			array(
@@ -101,7 +138,6 @@ final class EZRPW_Front {
 				}
 				$handle = generate_block_asset_handle( 'ezrate-price-widgets/widget', 'editorScript' );
 				wp_add_inline_script( $handle, 'window.ezrpwWidgets = ' . wp_json_encode( $list ) . '; window.ezrpwAdminUrl = ' . wp_json_encode( admin_url( 'admin.php?page=ezrpw-widgets' ) ) . ';', 'before' );
-				wp_enqueue_style( 'ezrpw', EZRPW_URL . 'assets/css/ezrpw.css', array(), EZRPW_VERSION );
 			}
 		);
 	}
@@ -114,10 +150,7 @@ final class EZRPW_Front {
 	private static function fixed() {
 		$out = array();
 		foreach ( EZRPW_Widgets::all() as $w ) {
-			if ( 'inline' === $w['position'] ) {
-				continue;
-			}
-			if ( 'front' === $w['show_on'] && ! is_front_page() ) {
+			if ( ! in_array( $w['position'], array( 'top', 'bottom' ), true ) || ! EZRPW_Widgets::shows_here( $w ) ) {
 				continue;
 			}
 			$out[ $w['position'] ] = $w; // One bar per edge.

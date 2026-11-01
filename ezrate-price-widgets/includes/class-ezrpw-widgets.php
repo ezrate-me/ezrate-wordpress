@@ -19,8 +19,26 @@ final class EZRPW_Widgets {
 
 	const TYPES     = array( 'ticker', 'bar', 'cards', 'table', 'chart' );
 	const RANGES    = array( '1d', '7d', '1m', 'all' );
-	const POSITIONS = array( 'inline', 'top', 'bottom' );
+	const POSITIONS = array( 'inline', 'top', 'bottom', 'before', 'after' );
+	const SHOW_ON   = array( 'all', 'front', 'posts', 'pages' );
 	const COLORS    = array( 'bg', 'fg', 'muted', 'border', 'accent', 'up', 'down', 'chart' );
+
+	/**
+	 * Languages of the widgets (those of ezrate.me) and display currencies (Toman or a foreign currency).
+	 */
+	const LANGS = array( 'fa', 'en', 'ar', 'ru', 'tr' );
+	const CURS  = array( 'irt', 'usd', 'eur', 'try', 'aed', 'rub' );
+
+	/**
+	 * Widget language for a WordPress locale (fa_IR → fa, ar → ar, ru_RU → ru, tr_TR → tr, anything else → en).
+	 *
+	 * @param string $locale Locale.
+	 * @return string
+	 */
+	public static function locale_lang( $locale ) {
+		$l = substr( (string) $locale, 0, 2 );
+		return in_array( $l, self::LANGS, true ) ? $l : 'en';
+	}
 
 	/**
 	 * Default options of a new widget.
@@ -37,6 +55,7 @@ final class EZRPW_Widgets {
 			'chart_asset' => 'usd',
 			'range'       => '1d',
 			'lang'        => $s['default_lang'],
+			'cur'         => $s['default_cur'],
 			'theme'       => 'light',
 			'colors'      => array_fill_keys( self::COLORS, '' ),
 			'radius'      => 12,
@@ -64,7 +83,8 @@ final class EZRPW_Widgets {
 		return wp_parse_args(
 			is_array( $s ) ? $s : array(),
 			array(
-				'default_lang' => 0 === strpos( get_locale(), 'fa' ) ? 'fa' : 'en',
+				'default_lang' => self::locale_lang( get_locale() ),
+				'default_cur'  => 'irt',
 				'link_rates'   => false,
 				'credit'       => false,
 				'cleanup'      => true,
@@ -172,7 +192,8 @@ final class EZRPW_Widgets {
 
 		$out['chart_asset'] = isset( $w['chart_asset'] ) && '' !== sanitize_key( $w['chart_asset'] ) ? sanitize_key( $w['chart_asset'] ) : $out['assets'][0];
 		$out['range']       = isset( $w['range'] ) && in_array( $w['range'], self::RANGES, true ) ? $w['range'] : $d['range'];
-		$out['lang']        = isset( $w['lang'] ) && in_array( $w['lang'], array( 'fa', 'en' ), true ) ? $w['lang'] : $d['lang'];
+		$out['lang']        = isset( $w['lang'] ) && in_array( $w['lang'], self::LANGS, true ) ? $w['lang'] : $d['lang'];
+		$out['cur']         = isset( $w['cur'] ) && in_array( $w['cur'], self::CURS, true ) ? $w['cur'] : $d['cur'];
 		$out['theme']       = isset( $w['theme'] ) && in_array( $w['theme'], array( 'light', 'dark' ), true ) ? $w['theme'] : $d['theme'];
 
 		$colors = array();
@@ -192,11 +213,47 @@ final class EZRPW_Widgets {
 		$out['columns']  = isset( $w['columns'] ) ? max( 0, min( 6, (int) $w['columns'] ) ) : $d['columns'];
 		$out['speed']    = isset( $w['speed'] ) ? max( 10, min( 180, (int) $w['speed'] ) ) : $d['speed'];
 		$out['position'] = isset( $w['position'] ) && in_array( $w['position'], self::POSITIONS, true ) ? $w['position'] : $d['position'];
-		if ( ! in_array( $out['type'], array( 'ticker', 'bar' ), true ) ) {
-			$out['position'] = 'inline';
+		// a fixed bar at the top / bottom of the screen only for one-line types; above / below the content for every type
+		if ( in_array( $out['position'], array( 'top', 'bottom' ), true ) && ! in_array( $out['type'], array( 'ticker', 'bar' ), true ) ) {
+			$out['position'] = 'before';
 		}
-		$out['show_on'] = isset( $w['show_on'] ) && in_array( $w['show_on'], array( 'all', 'front' ), true ) ? $w['show_on'] : $d['show_on'];
+		$out['show_on'] = isset( $w['show_on'] ) && in_array( $w['show_on'], self::SHOW_ON, true ) ? $w['show_on'] : $d['show_on'];
 		return $out;
+	}
+
+	/**
+	 * Does a widget placed automatically show on the current page?
+	 *
+	 * @param array $w Widget.
+	 * @return bool
+	 */
+	public static function shows_here( $w ) {
+		switch ( $w['show_on'] ) {
+			case 'front':
+				return is_front_page();
+			case 'posts':
+				return is_singular( 'post' );
+			case 'pages':
+				return is_page();
+			default:
+				return true;
+		}
+	}
+
+	/**
+	 * Where a widget is placed, in words.
+	 *
+	 * @param array $w Widget.
+	 * @return string
+	 */
+	public static function place_label( $w ) {
+		$labels = array(
+			'top'    => __( 'Fixed at the top of the site', 'ezrate-price-widgets' ),
+			'bottom' => __( 'Fixed at the bottom of the site', 'ezrate-price-widgets' ),
+			'before' => __( 'Above the text of posts / pages', 'ezrate-price-widgets' ),
+			'after'  => __( 'Below the text of posts / pages', 'ezrate-price-widgets' ),
+		);
+		return isset( $labels[ $w['position'] ] ) ? $labels[ $w['position'] ] : __( 'Shortcode / block / widget', 'ezrate-price-widgets' );
 	}
 
 	/**

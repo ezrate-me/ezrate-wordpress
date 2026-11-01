@@ -14,6 +14,43 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class EZRPW_Admin {
 
+	/**
+	 * Widget languages, each in its own script.
+	 */
+	const LANG_NAMES = array(
+		'fa' => 'فارسی (Persian, RTL)',
+		'en' => 'English',
+		'ar' => 'العربية (Arabic, RTL)',
+		'ru' => 'Русский (Russian)',
+		'tr' => 'Türkçe (Turkish)',
+	);
+
+	/**
+	 * Title of the «prices page» created in one click, in the widget's language (English is translatable).
+	 */
+	const PAGE_TITLES = array(
+		'fa' => 'قیمت لحظه‌ای ارز، طلا و سکه',
+		'ar' => 'أسعار العملات والذهب مباشرة',
+		'ru' => 'Курсы валют и золота онлайн',
+		'tr' => 'Canlı döviz ve altın fiyatları',
+	);
+
+	/**
+	 * Display currencies of the widgets.
+	 *
+	 * @return array
+	 */
+	private static function cur_names() {
+		return array(
+			'irt' => __( 'Toman (IRT)', 'ezrate-price-widgets' ),
+			'usd' => __( 'US dollar (USD)', 'ezrate-price-widgets' ),
+			'eur' => __( 'Euro (EUR)', 'ezrate-price-widgets' ),
+			'try' => __( 'Turkish lira (TRY)', 'ezrate-price-widgets' ),
+			'aed' => __( 'UAE dirham (AED)', 'ezrate-price-widgets' ),
+			'rub' => __( 'Russian ruble (RUB)', 'ezrate-price-widgets' ),
+		);
+	}
+
 	const CAP = 'manage_options';
 
 	/**
@@ -28,6 +65,11 @@ final class EZRPW_Admin {
 		add_action( 'admin_post_ezrpw_refresh', array( __CLASS__, 'refresh' ) );
 		add_action( 'admin_post_ezrpw_settings', array( __CLASS__, 'save_settings' ) );
 		add_action( 'wp_ajax_ezrpw_preview', array( __CLASS__, 'preview' ) );
+		add_action( 'admin_post_ezrpw_place', array( __CLASS__, 'place' ) );
+		add_action( 'admin_post_ezrpw_welcome_off', array( __CLASS__, 'welcome_off' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'welcome' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'credit_ask' ) );
+		add_action( 'admin_post_ezrpw_credit', array( __CLASS__, 'credit_answer' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( EZRPW_FILE ), array( __CLASS__, 'action_links' ) );
 	}
 
@@ -108,12 +150,12 @@ final class EZRPW_Admin {
 	 */
 	private static function choices() {
 		$data = EZRPW_Data::get();
-		$lang = 0 === strpos( get_user_locale(), 'fa' ) ? 'fa' : 'en';
+		$lang = EZRPW_Widgets::locale_lang( get_user_locale() );
 		$out  = array();
 		if ( $data ) {
 			foreach ( $data['rates'] as $r ) {
 				$out[ $r['category'] ][ $r['symbol'] ] = array(
-					'name' => $r['name'][ $lang ],
+					'name' => isset( $r['name'][ $lang ] ) && '' !== $r['name'][ $lang ] ? $r['name'][ $lang ] : $r['name']['en'],
 					'code' => $r['code'],
 					'icon' => $r['icon'],
 					'q'    => strtolower( $r['name']['fa'] . ' ' . $r['name']['en'] . ' ' . $r['code'] . ' ' . $r['symbol'] ),
@@ -150,13 +192,13 @@ final class EZRPW_Admin {
 		echo '<div class="ezrpwa-status ' . ( $error && ! $ok ? 'is-error' : '' ) . '">';
 		if ( $ok ) {
 			/* translators: %s: time since the last update, e.g. "5 mins" */
-			echo '<span class="dashicons dashicons-yes-alt"></span> ' . esc_html( sprintf( __( 'Prices updated %s ago.', 'ezrate-price-widgets' ), human_time_diff( $ok ) ) );
+			echo '<span style="vertical-align:text-bottom" class="dashicons dashicons-yes-alt"></span> ' . esc_html( sprintf( __( 'Prices updated %s ago.', 'ezrate-price-widgets' ), human_time_diff( $ok ) ) );
 			if ( is_array( $data ) && ! empty( $data['next_update'] ) && strtotime( $data['next_update'] ) > time() ) {
 				/* translators: %s: time until the next update */
 				echo ' ' . esc_html( sprintf( __( 'Next update in about %s (every 30 minutes on the free data plan).', 'ezrate-price-widgets' ), human_time_diff( strtotime( $data['next_update'] ) ) ) );
 			}
 		} else {
-			echo '<span class="dashicons dashicons-clock"></span> ' . esc_html__( 'Prices have not been downloaded yet.', 'ezrate-price-widgets' );
+			echo '<span style="vertical-align:text-bottom" class="dashicons dashicons-clock"></span> ' . esc_html__( 'Prices have not been downloaded yet.', 'ezrate-price-widgets' );
 		}
 		if ( $error ) {
 			echo ' <span class="ezrpwa-err">' . esc_html( $error ) . '</span>';
@@ -178,10 +220,21 @@ final class EZRPW_Admin {
 			'settings'  => __( 'Settings saved.', 'ezrate-price-widgets' ),
 			'wait'      => __( 'Please wait a few minutes before refreshing again.', 'ezrate-price-widgets' ),
 			'failed'    => __( 'The prices could not be downloaded; the last saved prices are shown.', 'ezrate-price-widgets' ),
+			'placed'    => __( 'Done — the widget now shows on your site. Open your site to see it.', 'ezrate-price-widgets' ),
+			'page'      => __( 'Done — a page with the widget was published.', 'ezrate-price-widgets' ),
 		);
 		if ( isset( $map[ $msg ] ) ) {
 			$type = in_array( $msg, array( 'wait', 'failed' ), true ) ? 'warning' : 'success';
-			echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( $map[ $msg ] ) . '</p></div>';
+			$links = '';
+			if ( 'placed' === $msg ) {
+				$links = ' <a href="' . esc_url( home_url( '/' ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'View site', 'ezrate-price-widgets' ) . '</a>';
+			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display only
+			$page = isset( $_GET['page_id'] ) ? absint( $_GET['page_id'] ) : 0;
+			if ( 'page' === $msg && $page ) {
+				$links = ' <a href="' . esc_url( get_permalink( $page ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'View page', 'ezrate-price-widgets' ) . '</a> · <a href="' . esc_url( admin_url( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ? 'site-editor.php?path=%2Fnavigation' : 'nav-menus.php' ) ) . '">' . esc_html__( 'Add it to your menu', 'ezrate-price-widgets' ) . '</a>';
+			}
+			echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( $map[ $msg ] ) . $links . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- links escaped above
 		}
 	}
 
@@ -197,7 +250,7 @@ final class EZRPW_Admin {
 			<hr class="wp-header-end">
 			<?php self::notice(); ?>
 			<?php self::status_box(); ?>
-			<p class="ezrpwa-lead"><?php esc_html_e( 'Each widget has its own type, prices, language and colours. Place it with its shortcode, the «EZRate price widget» block, the classic widget — or show a ticker or bar fixed at the top or bottom of every page.', 'ezrate-price-widgets' ); ?></p>
+			<p class="ezrpwa-lead"><?php esc_html_e( 'Each widget has its own type, prices, language and colours. Open a widget and choose where it appears (top or bottom of the site, above or below your posts), or use the one-click buttons to add it to your sidebar or to a new page.', 'ezrate-price-widgets' ); ?></p>
 			<table class="wp-list-table widefat fixed striped ezrpwa-list">
 				<thead><tr>
 					<th style="width:46px">ID</th>
@@ -228,13 +281,7 @@ final class EZRPW_Admin {
 						<td><?php echo esc_html( EZRPW_Widgets::type_label( $w['type'] ) ); ?> · <?php echo esc_html( strtoupper( $w['lang'] ) ); ?></td>
 						<td>
 							<?php
-							if ( 'top' === $w['position'] ) {
-								esc_html_e( 'Fixed at the top of the site', 'ezrate-price-widgets' );
-							} elseif ( 'bottom' === $w['position'] ) {
-								esc_html_e( 'Fixed at the bottom of the site', 'ezrate-price-widgets' );
-							} else {
-								esc_html_e( 'Shortcode / block / widget', 'ezrate-price-widgets' );
-							}
+							echo esc_html( EZRPW_Widgets::place_label( $w ) );
 							?>
 						</td>
 						<td><code class="ezrpwa-copy" title="<?php esc_attr_e( 'Click to copy', 'ezrate-price-widgets' ); ?>"><?php echo esc_html( $sc ); ?></code></td>
@@ -311,9 +358,17 @@ final class EZRPW_Admin {
 							<div class="ezrpwa-grid2">
 								<p><label class="ezrpwa-l"><?php esc_html_e( 'Widget language', 'ezrate-price-widgets' ); ?></label>
 									<select name="<?php echo esc_attr( $f( 'lang' ) ); ?>">
-										<option value="fa" <?php selected( $w['lang'], 'fa' ); ?>>فارسی (Persian, RTL)</option>
-										<option value="en" <?php selected( $w['lang'], 'en' ); ?>>English</option>
+										<?php foreach ( self::LANG_NAMES as $code => $label ) : ?>
+										<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $w['lang'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+										<?php endforeach; ?>
 									</select></p>
+								<p><label class="ezrpwa-l"><?php esc_html_e( 'Currency of the prices', 'ezrate-price-widgets' ); ?></label>
+									<select name="<?php echo esc_attr( $f( 'cur' ) ); ?>">
+										<?php foreach ( self::cur_names() as $code => $label ) : ?>
+										<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $w['cur'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+										<?php endforeach; ?>
+									</select>
+									<span class="description"><?php esc_html_e( 'Crypto and the gold ounce are always shown in US dollars.', 'ezrate-price-widgets' ); ?></span></p>
 								<p><label class="ezrpwa-l"><?php esc_html_e( 'Theme', 'ezrate-price-widgets' ); ?></label>
 									<select name="<?php echo esc_attr( $f( 'theme' ) ); ?>">
 										<option value="light" <?php selected( $w['theme'], 'light' ); ?>><?php esc_html_e( 'Light', 'ezrate-price-widgets' ); ?></option>
@@ -390,21 +445,27 @@ final class EZRPW_Admin {
 										<?php endfor; ?>
 									</select></p>
 							</div>
-							<div data-show="ticker bar">
-								<div class="ezrpwa-l"><?php esc_html_e( 'Where', 'ezrate-price-widgets' ); ?></div>
-								<div class="ezrpwa-radios">
-									<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="inline" <?php checked( $w['position'], 'inline' ); ?>> <?php esc_html_e( 'Where I put the shortcode / block', 'ezrate-price-widgets' ); ?></label>
-									<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="top" <?php checked( $w['position'], 'top' ); ?>> <?php esc_html_e( 'Fixed at the top of every page', 'ezrate-price-widgets' ); ?></label>
-									<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="bottom" <?php checked( $w['position'], 'bottom' ); ?>> <?php esc_html_e( 'Fixed at the bottom of every page', 'ezrate-price-widgets' ); ?></label>
-								</div>
-								<div class="ezrpwa-grid2 ezrpwa-fixed-opts">
-									<p><label class="ezrpwa-l"><?php esc_html_e( 'Show on', 'ezrate-price-widgets' ); ?></label>
-										<select name="<?php echo esc_attr( $f( 'show_on' ) ); ?>">
-											<option value="all" <?php selected( $w['show_on'], 'all' ); ?>><?php esc_html_e( 'All pages', 'ezrate-price-widgets' ); ?></option>
-											<option value="front" <?php selected( $w['show_on'], 'front' ); ?>><?php esc_html_e( 'Home page only', 'ezrate-price-widgets' ); ?></option>
-										</select></p>
-									<p><label><input type="checkbox" name="<?php echo esc_attr( $f( 'hide_mobile' ) ); ?>" value="1" <?php checked( $w['hide_mobile'] ); ?>> <?php esc_html_e( 'Hide on phones', 'ezrate-price-widgets' ); ?></label></p>
-								</div>
+						</div>
+
+						<div class="ezrpwa-box">
+							<h2><?php esc_html_e( 'Where should it appear?', 'ezrate-price-widgets' ); ?></h2>
+							<p class="description"><?php esc_html_e( 'Pick a place and save — nothing else to do. The widget is added by the plugin; your theme files are never changed.', 'ezrate-price-widgets' ); ?></p>
+							<div class="ezrpwa-radios">
+								<label data-show="ticker bar"><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="top" <?php checked( $w['position'], 'top' ); ?>> <?php esc_html_e( 'Fixed at the top of the site', 'ezrate-price-widgets' ); ?></label>
+								<label data-show="ticker bar"><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="bottom" <?php checked( $w['position'], 'bottom' ); ?>> <?php esc_html_e( 'Fixed at the bottom of the site', 'ezrate-price-widgets' ); ?></label>
+								<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="before" <?php checked( $w['position'], 'before' ); ?>> <?php esc_html_e( 'Above the text of posts / pages', 'ezrate-price-widgets' ); ?></label>
+								<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="after" <?php checked( $w['position'], 'after' ); ?>> <?php esc_html_e( 'Below the text of posts / pages', 'ezrate-price-widgets' ); ?></label>
+								<label><input type="radio" name="<?php echo esc_attr( $f( 'position' ) ); ?>" value="inline" <?php checked( $w['position'], 'inline' ); ?>> <?php esc_html_e( 'Only where I put it myself (sidebar, a page, shortcode or block)', 'ezrate-price-widgets' ); ?></label>
+							</div>
+							<div class="ezrpwa-grid2 ezrpwa-fixed-opts">
+								<p><label class="ezrpwa-l"><?php esc_html_e( 'Show on', 'ezrate-price-widgets' ); ?></label>
+									<select name="<?php echo esc_attr( $f( 'show_on' ) ); ?>">
+										<option value="all" <?php selected( $w['show_on'], 'all' ); ?>><?php esc_html_e( 'All pages', 'ezrate-price-widgets' ); ?></option>
+										<option value="front" <?php selected( $w['show_on'], 'front' ); ?>><?php esc_html_e( 'Home page only', 'ezrate-price-widgets' ); ?></option>
+										<option value="posts" <?php selected( $w['show_on'], 'posts' ); ?>><?php esc_html_e( 'Posts only', 'ezrate-price-widgets' ); ?></option>
+										<option value="pages" <?php selected( $w['show_on'], 'pages' ); ?>><?php esc_html_e( 'Pages only', 'ezrate-price-widgets' ); ?></option>
+									</select></p>
+								<p><label><input type="checkbox" name="<?php echo esc_attr( $f( 'hide_mobile' ) ); ?>" value="1" <?php checked( $w['hide_mobile'] ); ?>> <?php esc_html_e( 'Hide on phones', 'ezrate-price-widgets' ); ?></label></p>
 							</div>
 						</div>
 
@@ -453,10 +514,14 @@ final class EZRPW_Admin {
 							<h2><?php esc_html_e( 'Live preview', 'ezrate-price-widgets' ); ?></h2>
 							<div class="ezrpwa-preview" id="ezrpwa-preview"><?php echo EZRPW_Front::render( $w, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in EZRPW_Render ?></div>
 							<?php if ( $w['id'] ) : ?>
-								<h3><?php esc_html_e( 'Place it', 'ezrate-price-widgets' ); ?></h3>
-								<p class="ezrpwa-how"><b><?php esc_html_e( 'Shortcode', 'ezrate-price-widgets' ); ?></b><code class="ezrpwa-copy"><?php echo esc_html( '[ezrate_widget id="' . $w['id'] . '"]' ); ?></code></p>
-								<p class="ezrpwa-how"><b><?php esc_html_e( 'Block editor', 'ezrate-price-widgets' ); ?></b><?php esc_html_e( 'Add the «EZRate price widget» block and pick this widget.', 'ezrate-price-widgets' ); ?></p>
-								<p class="ezrpwa-how"><b><?php esc_html_e( 'Theme file', 'ezrate-price-widgets' ); ?></b><code class="ezrpwa-copy"><?php echo esc_html( '<?php echo do_shortcode( \'[ezrate_widget id="' . $w['id'] . '"]\' ); ?>' ); ?></code></p>
+								<h3><?php esc_html_e( 'Place it in one click', 'ezrate-price-widgets' ); ?></h3>
+								<?php self::place_buttons( $w ); ?>
+								<details class="ezrpwa-adv">
+									<summary><?php esc_html_e( 'Other ways (shortcode, block, theme file)', 'ezrate-price-widgets' ); ?></summary>
+									<p class="ezrpwa-how"><b><?php esc_html_e( 'Shortcode', 'ezrate-price-widgets' ); ?></b><code class="ezrpwa-copy"><?php echo esc_html( '[ezrate_widget id="' . $w['id'] . '"]' ); ?></code></p>
+									<p class="ezrpwa-how"><b><?php esc_html_e( 'Block editor', 'ezrate-price-widgets' ); ?></b><?php esc_html_e( 'Add the «EZRate price widget» block and pick this widget.', 'ezrate-price-widgets' ); ?></p>
+									<p class="ezrpwa-how"><b><?php esc_html_e( 'Theme file', 'ezrate-price-widgets' ); ?></b><code class="ezrpwa-copy"><?php echo esc_html( '<?php echo do_shortcode( \'[ezrate_widget id="' . $w['id'] . '"]\' ); ?>' ); ?></code></p>
+								</details>
 							<?php else : ?>
 								<p class="description"><?php esc_html_e( 'Create the widget to get its shortcode.', 'ezrate-price-widgets' ); ?></p>
 							<?php endif; ?>
@@ -493,11 +558,21 @@ final class EZRPW_Admin {
 				<h2><?php esc_html_e( 'General', 'ezrate-price-widgets' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr><th scope="row"><?php esc_html_e( 'Language of new widgets', 'ezrate-price-widgets' ); ?></th>
-						<td><select name="ezrpw_settings[default_lang]"><option value="fa" <?php selected( $s['default_lang'], 'fa' ); ?>>فارسی</option><option value="en" <?php selected( $s['default_lang'], 'en' ); ?>>English</option></select></td></tr>
+						<td><select name="ezrpw_settings[default_lang]">
+							<?php foreach ( self::LANG_NAMES as $code => $label ) : ?>
+							<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $s['default_lang'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select></td></tr>
+					<tr><th scope="row"><?php esc_html_e( 'Currency of new widgets', 'ezrate-price-widgets' ); ?></th>
+						<td><select name="ezrpw_settings[default_cur]">
+							<?php foreach ( self::cur_names() as $code => $label ) : ?>
+							<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $s['default_cur'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
+						</select></td></tr>
 					<tr><th scope="row"><?php esc_html_e( 'Links', 'ezrate-price-widgets' ); ?></th>
 						<td>
 							<label><input type="checkbox" name="ezrpw_settings[link_rates]" value="1" <?php checked( $s['link_rates'] ); ?>> <?php esc_html_e( 'Link each price to its page on ezrate.me (chart and history)', 'ezrate-price-widgets' ); ?></label><br>
-							<label><input type="checkbox" name="ezrpw_settings[credit]" value="1" <?php checked( $s['credit'] ); ?>> <?php esc_html_e( 'Show a small «Rates by EZRate» link under cards, tables and charts — thank you, it keeps this plugin free', 'ezrate-price-widgets' ); ?></label>
+							<label><input type="checkbox" name="ezrpw_settings[credit]" value="1" <?php checked( $s['credit'] ); ?>> <?php esc_html_e( 'Show a small «Source: EZRate» link (with its icon) in every widget — thank you, it keeps this plugin free', 'ezrate-price-widgets' ); ?></label>
 							<p class="description"><?php esc_html_e( 'Both are off by default: the plugin adds no links to your site unless you allow it.', 'ezrate-price-widgets' ); ?></p>
 						</td></tr>
 					<tr><th scope="row"><?php esc_html_e( 'Uninstall', 'ezrate-price-widgets' ); ?></th>
@@ -520,6 +595,159 @@ final class EZRPW_Admin {
 			<iframe class="ezrpwa-guide" title="<?php esc_attr_e( 'Guide', 'ezrate-price-widgets' ); ?>" src="<?php echo esc_url( add_query_arg( 'lang', $lang, EZRPW_URL . 'docs/guide.html' ) ); ?>"></iframe>
 		</div>
 		<?php
+	}
+
+	/**
+	 * One-click places of a widget: on the whole site (top bar or above posts), in the sidebar, on a new page.
+	 *
+	 * @param array $w Widget.
+	 */
+	private static function place_buttons( $w ) {
+		$url = static function ( $do ) use ( $w ) {
+			return wp_nonce_url( admin_url( 'admin-post.php?action=ezrpw_place&do=' . $do . '&id=' . $w['id'] ), 'ezrpw_place_' . $w['id'] );
+		};
+		echo '<div class="ezrpwa-place" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">';
+		if ( in_array( $w['type'], array( 'ticker', 'bar' ), true ) ) {
+			echo '<a class="button button-primary" href="' . esc_url( $url( 'top' ) ) . '"><span style="vertical-align:text-bottom" class="dashicons dashicons-arrow-up-alt"></span> ' . esc_html__( 'Show at the top of my whole site', 'ezrate-price-widgets' ) . '</a>';
+		} else {
+			echo '<a class="button button-primary" href="' . esc_url( $url( 'before' ) ) . '"><span style="vertical-align:text-bottom" class="dashicons dashicons-media-text"></span> ' . esc_html__( 'Show above all my posts', 'ezrate-price-widgets' ) . '</a>';
+		}
+		if ( self::sidebar() ) {
+			// the user adds it on Appearance › Widgets (a plugin never edits the sidebars itself)
+			echo '<a class="button" href="' . esc_url( admin_url( 'widgets.php' ) ) . '"><span style="vertical-align:text-bottom" class="dashicons dashicons-align-pull-right"></span> ' . esc_html__( 'Add to my sidebar', 'ezrate-price-widgets' ) . '</a>';
+		}
+		echo '<a class="button" href="' . esc_url( $url( 'page' ) ) . '"><span style="vertical-align:text-bottom" class="dashicons dashicons-admin-page"></span> ' . esc_html__( 'Create a prices page with it', 'ezrate-price-widgets' ) . '</a>';
+		echo '</div>';
+		echo '<p class="description">' . esc_html__( 'Your theme files are never changed; you can undo any of these from here, Appearance › Widgets or Pages.', 'ezrate-price-widgets' ) . '</p>';
+	}
+
+	/**
+	 * First widget area of a classic theme (block themes have none: they get the other buttons).
+	 *
+	 * @return string Sidebar id or ''.
+	 */
+	private static function sidebar() {
+		global $wp_registered_sidebars;
+		if ( ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) || empty( $wp_registered_sidebars ) ) {
+			return '';
+		}
+		return (string) array_key_first( $wp_registered_sidebars );
+	}
+
+	/**
+	 * One-click placing (buttons of the edit page and of the welcome notice).
+	 */
+	public static function place() {
+		$id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the nonce of this id is checked on the next line.
+		self::guard( 'ezrpw_place_' . $id );
+		$do = isset( $_GET['do'] ) ? sanitize_key( wp_unslash( $_GET['do'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked above.
+		$w  = EZRPW_Widgets::get( $id );
+		if ( ! $w ) {
+			self::back( 'ezrpw-widgets', 'failed' );
+		}
+		delete_option( 'ezrpw_welcome' );
+		if ( in_array( $do, array( 'top', 'before' ), true ) ) {
+			$w['position'] = $do;
+			$w['show_on']  = 'top' === $do ? 'all' : 'posts';
+			EZRPW_Widgets::save( $w );
+			self::back( 'ezrpw-edit', 'placed', array( 'id' => $id ) );
+		}
+		if ( 'page' === $do ) {
+			$page = wp_insert_post(
+				array(
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_title'   => isset( self::PAGE_TITLES[ $w['lang'] ] ) ? self::PAGE_TITLES[ $w['lang'] ] : __( 'Live currency and gold prices', 'ezrate-price-widgets' ),
+					'post_content' => '<!-- wp:ezrate-price-widgets/widget {"widgetId":' . (int) $id . '} /-->',
+				),
+				true
+			);
+			if ( is_wp_error( $page ) ) {
+				self::back( 'ezrpw-edit', 'failed', array( 'id' => $id ) );
+			}
+			self::back(
+				'ezrpw-edit',
+				'page',
+				array(
+					'id' => $id,
+					'page_id' => (int) $page,
+				)
+			);
+		}
+		self::back( 'ezrpw-edit', '', array( 'id' => $id ) );
+	}
+
+	/**
+	 * After activation: a short, dismissible notice with the one-click places (only for administrators, until used
+	 * or dismissed).
+	 */
+	public static function welcome() {
+		if ( ! get_option( 'ezrpw_welcome' ) || ! current_user_can( self::CAP ) ) {
+			return;
+		}
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( $screen && ! in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) && false === strpos( (string) $screen->id, 'ezrpw' ) ) {
+			return;
+		}
+		$all = EZRPW_Widgets::all();
+		$w   = $all ? reset( $all ) : null;
+		if ( ! $w ) {
+			return;
+		}
+		echo '<div class="notice notice-info ezrpwa-welcome"><p><strong>' . esc_html__( 'EZRate is ready. Show live dollar, gold and coin prices on your site in one click:', 'ezrate-price-widgets' ) . '</strong></p>';
+		self::place_buttons( $w );
+		echo '<p><a href="' . esc_url( admin_url( 'admin.php?page=ezrpw-edit&id=' . $w['id'] ) ) . '">' . esc_html__( 'Customise the widget first', 'ezrate-price-widgets' ) . '</a> · <a href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=ezrpw_welcome_off' ), 'ezrpw_welcome_off' ) ) . '">' . esc_html__( 'Dismiss', 'ezrate-price-widgets' ) . '</a></p></div>';
+	}
+
+	/**
+	 * Asks once (administrators, on the dashboard, Plugins and EZRate screens) whether the widgets may show the small
+	 * «Source: EZRate» link. Nothing is added to the site unless the owner says yes; «No thanks» is never asked again.
+	 */
+	public static function credit_ask() {
+		if ( get_option( 'ezrpw_credit_asked' ) || get_option( 'ezrpw_welcome' ) || ! current_user_can( self::CAP ) || ! EZRPW_Widgets::all() ) {
+			return;
+		}
+		$s = EZRPW_Widgets::settings();
+		if ( ! empty( $s['credit'] ) ) {
+			return;
+		}
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( $screen && ! in_array( $screen->id, array( 'dashboard', 'plugins' ), true ) && false === strpos( (string) $screen->id, 'ezrpw' ) ) {
+			return;
+		}
+		$url = function ( $do ) {
+			return wp_nonce_url( admin_url( 'admin-post.php?action=ezrpw_credit&do=' . $do ), 'ezrpw_credit' );
+		};
+		echo '<div class="notice notice-info"><p><strong>' . esc_html__( 'May your price widgets show a small «Source: EZRate» link?', 'ezrate-price-widgets' ) . '</strong> '
+			. esc_html__( 'It names where the rates come from and helps keep this plugin and its data free. You can change this any time in EZRate › Settings.', 'ezrate-price-widgets' ) . '</p><p>'
+			. '<a class="button button-primary" href="' . esc_url( $url( 'on' ) ) . '">' . esc_html__( 'Yes, show the source', 'ezrate-price-widgets' ) . '</a> '
+			. '<a class="button" href="' . esc_url( $url( 'off' ) ) . '">' . esc_html__( 'No thanks', 'ezrate-price-widgets' ) . '</a></p></div>';
+	}
+
+	/**
+	 * Answer of the «Source: EZRate» question.
+	 */
+	public static function credit_answer() {
+		self::guard( 'ezrpw_credit' );
+		$do = isset( $_GET['do'] ) ? sanitize_key( wp_unslash( $_GET['do'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- checked by guard() above.
+		update_option( 'ezrpw_credit_asked', 1, false );
+		if ( 'on' === $do ) {
+			$s           = EZRPW_Widgets::settings();
+			$s['credit'] = true;
+			update_option( EZRPW_Widgets::SETTINGS, $s );
+		}
+		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=ezrpw-widgets' ) );
+		exit;
+	}
+
+	/**
+	 * Dismiss the welcome notice.
+	 */
+	public static function welcome_off() {
+		self::guard( 'ezrpw_welcome_off' );
+		delete_option( 'ezrpw_welcome' );
+		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=ezrpw-widgets' ) );
+		exit;
 	}
 
 	/**
@@ -624,7 +852,8 @@ final class EZRPW_Admin {
 		update_option(
 			EZRPW_Widgets::SETTINGS,
 			array(
-				'default_lang' => isset( $raw['default_lang'] ) && 'en' === $raw['default_lang'] ? 'en' : 'fa',
+				'default_lang' => isset( $raw['default_lang'] ) && in_array( $raw['default_lang'], EZRPW_Widgets::LANGS, true ) ? $raw['default_lang'] : 'fa',
+				'default_cur'  => isset( $raw['default_cur'] ) && in_array( $raw['default_cur'], EZRPW_Widgets::CURS, true ) ? $raw['default_cur'] : 'irt',
 				'link_rates'   => ! empty( $raw['link_rates'] ),
 				'credit'       => ! empty( $raw['credit'] ),
 				'cleanup'      => ! empty( $raw['cleanup'] ),

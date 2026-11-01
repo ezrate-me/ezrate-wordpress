@@ -97,4 +97,14 @@ body.ezrpw-pad-bottom { padding-bottom: 2.9em; }
 
 /* footer */
 .ezrpw-ft { display: flex; justify-content: space-between; align-items: center; gap: .6em; padding: .4em 1em; border-top: 1px solid var(--ezrpw-border); font-size: .76em; color: var(--ezrpw-muted); flex-wrap: wrap; }
-.ezrpw-credit { color: var(--ezrpw-accent) !important; font-weight: 600; }
+.ezrpw-credit { display: inline-flex; align-items: center; gap: .4em; color: var(--ezrpw-muted) !important; font-weight: 500; text-decoration: none !important; white-space: nowrap; }
+.ezrpw-credit img { width: 1.35em; height: 1.35em; border-radius: .3em; flex: none; margin: 0; box-shadow: none; }
+.ezrpw-credit b { color: var(--ezrpw-accent); font-weight: 700; }
+.ezrpw-credit:hover b { text-decoration: underline; }
+/* ticker / price bar: the source at the end of the row */
+.ezrpw-t-ticker { display: flex; align-items: center; }
+.ezrpw-t-ticker .ezrpw-track-wrap { flex: 1; min-width: 0; }
+.ezrpw-src { flex: none; display: inline-flex; align-items: center; padding: 0 .9em; font-size: .78em; border-inline-start: 1px solid var(--ezrpw-border); align-self: stretch; }
+/* placed automatically above / below the text of a post or page */
+.ezrpw-auto { margin: 0 0 1.5em; clear: both; }
+.ezrpw-auto-after { margin: 1.5em 0 0; }

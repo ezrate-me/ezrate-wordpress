@@ -1,18 +1,18 @@
-=== EZRate Price Widgets – Dollar, Gold & Coin Rates ===
-Contributors: ezrate
-Tags: currency, exchange rate, gold price, toman, ticker
-Requires at least: 6.0
-Tested up to: 6.8
+=== EZRate Price Widgets – Live Dollar, Gold, Coin & Crypto Prices ===
+Contributors: aslanaria2000
+Tags: exchange rates, gold price, currency, crypto prices, toman
+Requires at least: 6.3
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Live Iranian free-market rates in Toman — US dollar, euro, gold, coins, USDT and crypto — as a ticker, price bar, cards, table or chart.
+Live dollar, euro, gold, coin, USDT and crypto prices in Toman from Iran's free market — ticker, price bar, cards, table or chart widgets.
 
 == Description ==
 
-**EZRate Price Widgets** shows Iran's free-market exchange rates on your WordPress site: the US dollar, euro, UAE dirham, Turkish lira and 20+ other currencies, 18K and 24K gold, Emami and Bahar Azadi coins, the global gold ounce, USDT, Bitcoin and other crypto — in Toman, in Persian or English.
+**EZRate Price Widgets** shows Iran's free-market exchange rates on your WordPress site: the US dollar, euro, UAE dirham, Turkish lira and 20+ other currencies, 18K and 24K gold, Emami and Bahar Azadi coins, the global gold ounce, USDT, Bitcoin and other crypto — in Toman or in US dollars, euros, Turkish lira, UAE dirhams or Russian rubles, in Persian, English, Arabic, Russian or Turkish.
 
 Everything is set up from your own dashboard. No account, no API key, no code.
 
@@ -26,13 +26,16 @@ Everything is set up from your own dashboard. No account, no API key, no code.
 
 = Full control from WordPress =
 
-* Pick the prices and their order (up to 20), the language (Persian RTL or English) and a light or dark theme.
+* Pick the prices and their order (up to 20), the language (Persian, English, Arabic, Russian or Turkish; Persian and Arabic right-to-left) and a light or dark theme.
+* Show the prices in Toman or in another currency your visitors know: US dollar, euro, Turkish lira, UAE dirham or Russian ruble (crypto and the gold ounce stay in dollars).
 * Your own colours: background, text, secondary text, border, accent, price up / down and the chart line.
 * Corner radius, text size, your theme's font or the system font.
 * Show or hide the buy price, the 24-hour change, flags and icons, the update time.
 * Live preview while you edit.
-* Place a widget with its **shortcode**, the **"EZRate price widget" block**, the **classic widget**, or show a ticker or bar **fixed at the top or bottom of every page** (all pages or the home page only, optionally hidden on phones).
-* Quick shortcode without saving a widget: `[ezrate_widget type="cards" assets="usd,eur,g18,emami" lang="fa" theme="dark"]`
+* **One-click placing, no code:** show it at the top or bottom of every page, above or below the text of your posts or pages, add it to your sidebar, or create a ready "Live prices" page — each with one button (on all pages, the home page, posts only or pages only; optionally hidden on phones).
+* Or place it yourself with its **shortcode**, the **"EZRate price widget" block** or the **classic widget**.
+* Your theme files are never changed.
+* Quick shortcode without saving a widget: `[ezrate_widget type="cards" assets="usd,eur,g18,emami" lang="fa" cur="irt" theme="dark"]` (`lang`: fa, en, ar, ru, tr · `cur`: irt, usd, eur, try, aed, rub)
 
 = Fast and light =
 
@@ -44,24 +47,26 @@ Everything is set up from your own dashboard. No account, no API key, no code.
 
 The dashboard is in English and Persian (فارسی). Each widget has its own language, independent of the site language. A complete guide in both languages is under **EZRate › Help**.
 
+= به فارسی =
+
+افزونهٔ **ویجت قیمت ایزی‌ریت** قیمت لحظه‌ای دلار، یورو، درهم، لیر و بیش از ۲۰ ارز دیگر، قیمت طلای ۱۸ عیار و ۲۴ عیار، قیمت سکه امامی و بهار آزادی، انس طلا، قیمت تتر و بیت‌کوین را از بازار آزاد ایران به تومان در سایت وردپرسی شما نشان می‌دهد: زیرنویس متحرک قیمت، نوار قیمت بالای سایت، کارت و جدول قیمت ارز و طلا، و نمودار. بدون ثبت‌نام، بدون کلید API و بدون یک خط کدنویسی؛ همهٔ تنظیمات در پیشخوان وردپرس، با بلوک گوتنبرگ، ابزارک و شورت‌کد.
+
 == External services ==
 
 This plugin gets the exchange rates from the **EZRate data service** (https://ezrate.me), operated by EZRate.
 
 * **What is sent and when:** your server requests `https://api.ezrate.me/v1/wp/data` about every 30 minutes (WP-Cron), when the cached prices have expired, and when an administrator clicks "Refresh prices now". The request contains the list of assets shown as charts (for example `usd`) and the standard WordPress HTTP headers (your site address in the User-Agent). No data about your visitors is sent.
 * **Images:** the currency flags and asset icons are loaded by your visitors' browsers from `https://ezrate.me/i/…` (for example `https://ezrate.me/i/usd.svg`). Turn icons off in a widget's settings to avoid these requests.
-* **Links:** the plugin adds no links to your pages unless you turn them on under **EZRate › Settings** (links from prices to their pages on ezrate.me, and a small "Rates by EZRate" credit). Both are off by default.
+* **Links:** the plugin adds no links to your pages unless you allow them (the one-time question after your first widget, or **EZRate › Settings**): links from prices to their pages on ezrate.me, and a small «Source: EZRate» credit with the EZRate icon. Both are off by default.
 
-Terms of use: https://ezrate.me/legal/terms — Privacy policy: https://ezrate.me/legal/privacy
+Terms of use: https://ezrate.me/legal/terms/en — Privacy policy: https://ezrate.me/legal/privacy/en
 
 == Installation ==
 
 1. Install the plugin from **Plugins › Add New** (search for "EZRate") or upload the zip, then activate it.
 2. Go to **EZRate › Widgets**. A first ticker is already there; click it to choose prices, language and colours, or click **Add widget**.
-3. Place the widget:
-   * copy its shortcode, e.g. `[ezrate_widget id="1"]`, into a post, page or widget area, or
-   * add the **EZRate price widget** block and pick the widget, or
-   * for a ticker or price bar, choose **Fixed at the top / bottom of every page**.
+3. Right after activation a notice on your dashboard offers one-click buttons: **Show at the top of my whole site**, **Add to my sidebar** (classic themes: opens Appearance › Widgets, where you add "EZRate price widget") or **Create a prices page with it**. The same buttons are on every widget's page.
+4. Or choose **Where should it appear?** in the widget (top / bottom of the site, above / below posts and pages), or use its shortcode, e.g. `[ezrate_widget id="1"]`, or the **EZRate price widget** block.
 
 == Frequently Asked Questions ==
 
@@ -71,7 +76,7 @@ Yes. The plugin and the data it uses are free.
 
 = How often are the prices updated? =
 
-Every 30 minutes, the update interval of the free EZRate data plan. For live, minute-by-minute prices use the widgets of your EZRate account at https://ezrate.me/services/widgets.
+Every 30 minutes, the update interval of the free EZRate data plan. For live, minute-by-minute prices use the widgets of your EZRate account at https://ezrate.me/services/widgets/en.
 
 = Where do the prices come from? =
 
@@ -85,9 +90,13 @@ No. Prices are stored in your database and the widgets are plain HTML and CSS re
 
 Yes. Cached pages show the prices of the moment they were cached; most caching plugins refresh pages regularly.
 
+= Does the plugin add links to my site? =
+
+Not unless you allow it. After you create a widget the plugin asks once whether your widgets may show a small «Source: EZRate» link with its icon; you can also switch it (and links from each price to its chart page) on or off in **EZRate › Settings**. Both are off until you say yes.
+
 = Can I show the prices in English? =
 
-Yes, every widget has its own language: Persian (right-to-left, Persian digits) or English.
+Yes, every widget has its own language: Persian, English, Arabic, Russian or Turkish (Persian and Arabic right-to-left).
 
 = How do I change the colours? =
 
@@ -109,6 +118,31 @@ Open **EZRate › Settings**: it shows when the prices were last downloaded and 
 
 == Changelog ==
 
+= 2.3.1 =
+* Readme: corrected the description of the optional credit link and the widget languages.
+
+= 2.3.0 =
+* New: optional «Source: EZRate» link with the EZRate icon in every widget type (ticker and price bar too), in the widget's language; asked once, off until you allow it.
+* Better plugin name and description for search.
+
+= 2.2.0 =
+* New: widgets in Arabic, Russian and Turkish (besides Persian and English), with their own number and date formats; Arabic right-to-left.
+* New: currency of the prices per widget — Toman, US dollar, euro, Turkish lira, UAE dirham or Russian ruble; charts and low / high follow it.
+* New: default language and currency for new widgets in EZRate › Settings; `cur` attribute in the shortcode.
+
+= 2.1.1 =
+* Translations are delivered by translate.wordpress.org; corrected service links.
+
+= 2.1.0 =
+* New: one-click placing — show a widget at the top of the site or above all posts, add it to the sidebar, or create a prices page, without code.
+* New: "above / below the text of posts and pages" placement for every widget type, on all pages, posts only, pages only or the home page.
+* New: a short welcome notice after activation with the one-click buttons (dismissible).
+
+= 2.0.1 =
+* The block uses Block API version 3 (works in the iframed editor of WordPress 7).
+* The widget styles load inside the editor iframe as well as on the site.
+* Tested up to WordPress 7.1.
+
 = 2.0.0 =
 * New: everything is configured in WordPress — five widget types, prices and order, language, theme and custom colours, live preview.
 * New: price table widget; fixed top / bottom bars; block, shortcode and classic widget.
@@ -119,6 +153,18 @@ Open **EZRate › Settings**: it shows when the prices were last downloaded and 
 * Gutenberg block with live preview.
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+Widgets in Arabic, Russian and Turkish, and prices in the currency of your choice.
+
+= 2.1.1 =
+Corrected links to the EZRate terms, privacy policy and widgets page.
+
+= 2.1.0 =
+Show your widgets on the site in one click — no shortcode needed.
+
+= 2.0.1 =
+Compatibility with the WordPress 7 block editor.
 
 = 2.0.0 =
 Widgets are now configured in your WordPress dashboard. Re-create your widgets under EZRate › Widgets.

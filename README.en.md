@@ -1,10 +1,12 @@
 # EZRate Price Widgets for WordPress — Iran Dollar, Gold & Coin Rates
 
-[فارسی](README.md) · [Download the latest release](../../releases/latest)
+[فارسی](README.md) · **[Install from WordPress.org](https://wordpress.org/plugins/ezrate-price-widgets/)** · [Download the latest release](../../releases/latest)
+
+> In your dashboard: Plugins › Add New › search «EZRate» › Install › Activate.
 
 ![EZRate Price Widgets](images/banner-1544x500.png)
 
-**EZRate Price Widgets** shows Iran's live free-market rates on your WordPress site: the **US dollar, euro, UAE dirham, Turkish lira and 20+ other currencies, 18k and 24k gold, Emami and Bahar Azadi coins, the gold ounce, USDT, Bitcoin and other crypto** — in Toman, in Persian or English.
+**EZRate Price Widgets** shows Iran's live free-market rates on your WordPress site: the **US dollar, euro, UAE dirham, Turkish lira and 20+ other currencies, 18k and 24k gold, Emami and Bahar Azadi coins, the gold ounce, USDT, Bitcoin and other crypto** — in Toman or in US dollars, euros, lira, dirhams or rubles, in Persian, English, Arabic, Russian or Turkish.
 
 Everything is set up from your own dashboard. **No account, no API key, no code.**
 

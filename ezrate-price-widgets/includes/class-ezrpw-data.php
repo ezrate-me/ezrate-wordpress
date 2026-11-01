@@ -30,7 +30,6 @@ final class EZRPW_Data {
 	 * Hooks.
 	 */
 	public static function init() {
-		load_plugin_textdomain( 'ezrate-price-widgets', false, dirname( plugin_basename( EZRPW_FILE ) ) . '/languages' );
 		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
 		add_action( self::CRON, array( __CLASS__, 'cron' ) );
 		if ( ! wp_next_scheduled( self::CRON ) ) {
@@ -57,6 +56,11 @@ final class EZRPW_Data {
 	 */
 	public static function activate() {
 		EZRPW_Widgets::ensure_default();
+		// the one-click «show it on my site» notice (EZRPW_Admin::welcome), until used or dismissed
+		if ( ! get_option( 'ezrpw_welcome_shown' ) ) {
+			add_option( 'ezrpw_welcome', 1 );
+			add_option( 'ezrpw_welcome_shown', 1 );
+		}
 		add_filter( 'cron_schedules', array( __CLASS__, 'schedules' ) );
 		if ( ! wp_next_scheduled( self::CRON ) ) {
 			wp_schedule_event( time() + 30, 'ezrpw_half_hour', self::CRON );
